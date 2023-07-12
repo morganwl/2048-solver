@@ -1,4 +1,7 @@
 from random import random, choice
+import statistics
+
+import numpy as np
 
 from grid import Grid
 from player_agent import PlayerAI, PlayerAIAlphaBeta
@@ -36,33 +39,61 @@ def play_game(player, opponent, displayer=None):
         tile = random_tile()
         grid = grid.insert_tile(pos, tile)
 
+    moves = []
+    if displayer:
+        displayer.display(grid)
+
     while True:
-        if displayer:
-            displayer.display(grid)
         if not grid.get_available_moves():
             break
         move = player.get_move(grid)
+        grid = grid.validate_move(move)
         displayer.print_player_move(move)
-        displayer.print_info((f'{player.stats["last_move_time"]/1e9:.4f}'
-            f' {player.stats["last_move_value"]:.2f}'
-            ))
-        new_grid = grid.move(move)
-        if new_grid == grid:
-            displayer.print_info('Invalid move.')
-            break
-        grid = new_grid
+        displayer.print_move_info(player.stats['last_move_time'], player.stats['last_move_value'])
+        moves.append({key: val for key, val in player.stats.items()})
+        displayer.display(grid)
 
-        if displayer:
-            displayer.display(grid)
         move = opponent.get_move(grid)
         displayer.print_computer_move(move)
         tile = random_tile()
         grid = grid.insert_tile(move, tile)
+        displayer.display(grid)
+
+    return {
+            'no_moves': len(moves),
+            'average_move_time': statistics.fmean(move['last_move_time'] for move in moves),
+            'score': grid.get_max_tile(),
+            }
+
+def play_series(displayer, n=20):
+    games = []
+    generator = np.random.default_rng()
+    med, confidence = 0, 0
+    while confidence < .95:
+        player = PlayerAIAlphaBeta()
+        # player = PlayerAI()
+        stats = play_game(player, Computer(), displayer)
+        games.append(stats)
+        displayer.print_game_info(*stats.values())
+        scores = np.fromiter((game['score'] for game in games), dtype=np.uint16)
+        med, confidence = calc_confidence(scores, generator)
+        displayer.print_info(','.join(str(score) for score in scores))
+        displayer.print_info(f'{med} {confidence:.3f}')
+
+def calc_confidence(scores, generator=None, noise_level=5):
+    if generator is None:
+        generator = np.default_rng()
+    # if len(scores) % 2 == 0:
+    #     np.append(scores, np.choice(scores, 1))
+    noise = generator.choice([2**i for i in range(1,12)], 2*noise_level)
+    med = np.median(scores)
+    samples = np.concatenate([scores, noise])
+    trials = (generator.choice(samples, len(samples)) for _ in range(100))
+    confidence = np.mean(np.fromiter((np.median(trial) == med for trial in trials), dtype=np.uint8))
+    return med, confidence
 
 
 if __name__ == '__main__':
-    player = PlayerAIAlphaBeta()
-    # player = PlayerAI()
     displayer = CursesDisplayer()
-    play_game(player, Computer(), displayer)
+    play_series(displayer)
     displayer.wait()
