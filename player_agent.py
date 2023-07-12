@@ -47,10 +47,10 @@ class PlayerAI:
 
 class PlayerAIAlphaBeta(PlayerAI):
     def get_max(self, grid, alpha=-INF, beta=INF, depth=0):
-        if depth > 3:
+        if depth > 2:
             return grid.get_max_tile(), None
         moves = grid.get_available_moves()
-        val = -INF+1
+        val = -INF
         move = None
         for m, g in moves:
             v = self.get_min(g, alpha, beta, depth)
@@ -61,11 +61,13 @@ class PlayerAIAlphaBeta(PlayerAI):
                     alpha = v
                 if v >= beta:
                     break
+        if move is None:
+            val = 0
         return val, move
 
     def get_min(self, grid, alpha=-INF, beta=INF, depth=0):
         cells = grid.get_available_cells()
-        val = INF-1
+        val = INF
         for c in cells:
             v = sum(p * self.get_max(grid.insert_tile(c, t), alpha, beta, depth+1)[0]
                     for p, t in ((.9, 2), (.1, 4)))
@@ -75,4 +77,6 @@ class PlayerAIAlphaBeta(PlayerAI):
                     beta = v
                 if v <= alpha:
                     break
+        if val == INF:
+            val = 0
         return val

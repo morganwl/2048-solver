@@ -24,6 +24,13 @@ class Grid:
         grids = (self.move(d) for d in DIRECTIONS)
         return [(move, grid) for move, grid in zip(DIRECTIONS, grids) if grid != self]
 
+    def validate_move(self, move):
+        if move not in DIRECTIONS:
+            raise Exception('Unrecognized move ' + str(move))
+        grid = self.move(move)
+        if grid == self:
+            raise Exception('Invalid move ' + str(move))
+        return grid
 
     def insert_tile(self, pos, tile):
         assert(self.tiles[pos[0] + pos[1]*4] == 0)
