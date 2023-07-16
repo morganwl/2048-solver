@@ -24,7 +24,7 @@ class PlayerAI:
             (heuristic.evaluate_max, 1),
             ]
 
-    def __init__(self, depth_limit=2):
+    def __init__(self, depth_limit=1):
         self.depth_limit = depth_limit
         self.stats = {}
 
@@ -169,12 +169,14 @@ class Node:
 
 class PlayerAITree(PlayerAI):
     evaluate_weights = [
-            (heuristic.evaluate_combination, 1),
+            (heuristic.evaluate_combination, .75),
             (heuristic.evaluate_empty, 2),
+            (heuristic.evaluate_monotonic, .25),
             ]
     sort_weights = [
-            (heuristic.evaluate_combination, 1),
+            (heuristic.evaluate_combination, .75),
             (heuristic.evaluate_empty, 2),
+            (heuristic.evaluate_monotonic, .25),
             ]
     min_sort_weights = [
             (heuristic.evaluate_monotonic, 1),
@@ -207,9 +209,6 @@ class PlayerAITree(PlayerAI):
         return val, move
 
     def get_max(self, node, alpha=-INF, beta=INF, depth=0):
-        # if depth == self.depth_limit:
-        #     node.value = estimate(node.grid, self.evaluate_weights)
-        #     return node.value, None
         if node.available is None:
             node.available = [Node(m, g, estimate(g, self.sort_weights))
                     for m, g in node.grid.get_available_moves()]
@@ -258,5 +257,36 @@ class PlayerAITree(PlayerAI):
                 for p,n in zip([.9,.1], node.available))
         return node.value
 
+from queue import PriorityQueue
+
+class PriorityNode():
+    __slots__ = ['node', 'parent', 'current', 'queue']
+    def __init__(self, node, parent=None):
+        self.node = node
+        self.parent = parent
+        self.current = None
+        self.queue = None
+
+    def expand(self):
+        pass
+
+    def search(self):
+        pass
+
 class PlayerAITreeIter(PlayerAI):
-    pass
+    @record
+    def get_move(self, grid):
+        if self.root is None:
+            self.root = Node(None, grid)
+        else:
+            for expecti in self.root.available:
+                for maxi in expecti.available:
+                    if maxi.grid == grid:
+                        self.root = maxi
+                        break
+        frontier = PriorityQueue()
+        self.root.search()
+        frontier.put(self.root)
+        while frontier:
+            node = frontier.get()
+
