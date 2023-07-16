@@ -34,7 +34,6 @@ class CursesDisplayer:
                     height = h
                 if not w:
                     w = int((curses.COLS - x) / (len(row) - i))
-                print(n, h, w, y, x)
                 setattr(self, n, curses.newwin(h, w, y, x))
                 x += w
             y += height

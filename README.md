@@ -5,4 +5,6 @@ The solver searches for a move that will lead to the best possible
 outcome, assuming that the game makes the move most inconvenient for the
 player AI.
 
+## The game of 2048
+
 

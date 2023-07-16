@@ -45,8 +45,20 @@ class Grid:
     def as_list(self):
         return self.tiles.tolist()
 
+    def __getitem__(self, i):
+        try:
+            x,y = i
+        except:
+            return self.tiles[i]
+        else:
+            return self.tiles[x + 4*y]
+
     def __eq__(self, other):
         return (self.tiles == other.tiles).all()
+
+    def __repr__(self):
+        return f'Grid({self.tiles!r})'
+
 
     @classmethod
     def from_list(cls, tiles):
