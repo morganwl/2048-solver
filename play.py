@@ -5,7 +5,7 @@ import numpy as np
 
 from grid import Grid
 from player_agent import PlayerAI, PlayerAIAlphaBeta, PlayerAICombination, PlayerAIDownRight, \
-        PlayerAITree
+        PlayerAITree, PlayerAITreeLimited, PlayerAITreeLimitMin
 from display import CursesDisplayer
 
 class Player:
@@ -50,7 +50,10 @@ def play_game(player, opponent, displayer=None):
         move = player.get_move(grid)
         grid = grid.validate_move(move)
         displayer.print_player_move(move)
-        displayer.print_move_info(player.stats['last_move_time'], player.stats['last_move_value'])
+        displayer.print_move_info(
+                player.counts.get('get_max_calls', 0),
+                player.stats['last_move_time'],
+                player.stats['last_move_value'])
         moves.append({key: val for key, val in player.stats.items()})
         displayer.display(grid)
 
@@ -72,6 +75,8 @@ def play_series(displayer, n=20):
     med, confidence = 0, 0
     while confidence < .95:
         player = PlayerAITree()
+        # player = PlayerAITreeLimited()
+        player = PlayerAITreeLimitMin()
         # player = PlayerAIDownRight()
         # player = PlayerAICombination()
         # player = PlayerAIAlphaBeta()
@@ -122,3 +127,4 @@ if __name__ == '__main__':
     displayer = CursesDisplayer()
     play_series(displayer)
     displayer.wait()
+    del(displayer)

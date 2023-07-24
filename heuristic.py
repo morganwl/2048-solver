@@ -5,7 +5,7 @@ def evaluate_combination(grid):
     return sum(tile_value(t) for t in grid)
 
 def evaluate_empty(grid):
-    return sum(t == 0 for t in grid) - 16
+    return sum(t == 0 for t in grid) - 8
 
 def evaluate_monotonic(grid):
     h = 0
@@ -37,8 +37,46 @@ def evaluate_monotonic(grid):
             h += col
     return h
 
+def evaluate_monotonic_change(grid, pos):
+    left, right, up, down = 0,0,0,0
+    x,y = pos
+    for i in reversed(range(x)):
+        if grid[i,y]:
+            left = grid[i,y]
+            break
+    for i in range(x+1,4):
+        if grid[i,y]:
+            right = grid[i,y]
+            break
+    for j in reversed(range(y)):
+        if grid[x,j]:
+            up = grid[x,j]
+            break
+    for j in range(y+1,4):
+        if grid[x,j]:
+            down = grid[x,j]
+            break
+
+    h = 0
+    if left > 4 and right > 4:
+        h -= sum(tile_value(grid[i,y]) for i in range(4))
+    if left == 2 or right == 2:
+        h += .9
+    if left == 4 or right == 4:
+        h += .6
+    if up > 4 and down > 4:
+        h -= sum(tile_value(grid[x,j]) for j in range(4))
+    if up == 2 or down == 2:
+        h += .9
+    if up == 4 or right == 4:
+        h += .6
+    return h
+
 def estimate(grid, weights):
     return sum(w * f(grid) for f,w in weights)
+
+def estimate_min(grid, tile, weights):
+    return sum(w * f(grid, tile) for f,w in weights)
 
 tile_values = {0: 0, 2: 0}
 

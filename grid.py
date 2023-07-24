@@ -6,6 +6,8 @@ DIRECTIONS = [RIGHT, DOWN, LEFT, UP] = range(4)
 TILE_TYPE=np.uint16
 
 class Grid:
+    __slots__ = ['tiles']
+
     def __init__(self, tiles=None):
         if tiles is None:
             tiles = np.zeros(16, dtype=TILE_TYPE)

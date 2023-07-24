@@ -64,10 +64,10 @@ class CursesDisplayer:
         self.infoscr.addstr(0,0, str(text))
         self.infoscr.refresh()
 
-    def print_move_info(self, mtime, val):
+    def print_move_info(self, moves, mtime, val):
         y,x = self.gamescr.getyx()
         self.gamescr.scroll(-(y+1))
-        self.gamescr.addstr(0,0, f'{mtime/1e9: 3.4f} {val: 6.4f}')
+        self.gamescr.addstr(0,0, f'{moves: 4d} {mtime/1e9: 3.4f} {val: 6.4f}')
         self.gamescr.refresh()
 
     def print_game_info(self, no_moves, avg_mtime, score):
