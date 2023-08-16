@@ -7,6 +7,11 @@ player AI.
 
 ## The game of 2048
 
+The game of 2048 presents the player with numeric tiles placed on a 4x4
+board.  By sliding the tiles in one of four directions (right, left, up
+and down), the player can combine tiles of the same value into a new,
+larger tile.
+
 ## Results
 
 ### July 16
