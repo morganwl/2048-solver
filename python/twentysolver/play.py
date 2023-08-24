@@ -45,6 +45,9 @@ def play_game(player, opponent, displayer=None):
         displayer.display(grid)
 
     while True:
+        input = displayer.getch()
+        if input == ord('q'):
+            return None
         if not grid.get_available_moves():
             break
         move = player.get_move(grid)
@@ -82,6 +85,8 @@ def play_series(displayer, n=20):
         # player = PlayerAIAlphaBeta()
         # player = PlayerAI()
         stats = play_game(player, Computer(), displayer)
+        if stats is None:
+            break
         games.append(stats)
         displayer.print_game_info(*stats.values())
         scores = np.fromiter((game['score'] for game in games), dtype=np.uint16)

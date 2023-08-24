@@ -21,6 +21,8 @@ class CursesDisplayer:
             ]
     def __init__(self):
         self.stdscr = curses.initscr()
+        self.stdscr.nodelay(True)
+        curses.noecho()
         y,x = 0, 0
         for row in self.windows:
             height = 0
@@ -78,6 +80,9 @@ class CursesDisplayer:
 
     def wait(self):
         self.infoscr.getch()
+
+    def getch(self):
+        return self.stdscr.getch()
 
     def __del__(self):
         self.wait()
