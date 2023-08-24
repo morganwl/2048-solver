@@ -4,8 +4,8 @@ from collections import namedtuple
 import sys
 import statistics
 
-import heuristic
-from heuristic import estimate, estimate_min
+import twentysolver.heuristic as heuristic
+from twentysolver.heuristic import estimate, estimate_min
 
 INF = 2**32-1
 
@@ -20,7 +20,7 @@ def record(func):
         time_out = time.process_time_ns()
         self.stats['last_move_time'] = time_out - time_in
         self.stats['last_move_value'] = result[0]
-        print(result, file=sys.stderr)
+        # print(result, file=sys.stderr)
         return result[1]
     return wrapper
 
@@ -381,15 +381,15 @@ class PlayerAITreeLimited(PlayerAI):
                 if v > val:
                     val = v
                     move = node.move
-                    print(node.height, i, v, file=sys.stderr)
+                    # print(node.height, i, v, file=sys.stderr)
                     if alpha < v:
                         alpha = v
-                print(self.depth_limit, node.height, i, v, file=sys.stderr)
+                # print(self.depth_limit, node.height, i, v, file=sys.stderr)
                 # if time.process_time_ns() - stime > 2e8:
                 #     over = True
                 #     break
             self.depth_limit += 1
-        print(val, '\n', file=sys.stderr)
+        # print(val, '\n', file=sys.stderr)
         self.depth_limit = max_depth
         for mini in self.root.available:
             if mini.move == move:

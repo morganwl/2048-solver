@@ -3,10 +3,10 @@ import statistics
 
 import numpy as np
 
-from grid import Grid
-from player_agent import PlayerAI, PlayerAIAlphaBeta, PlayerAICombination, PlayerAIDownRight, \
+from twentysolver.grid import Grid
+from twentysolver.player_agent import PlayerAI, PlayerAIAlphaBeta, PlayerAICombination, PlayerAIDownRight, \
         PlayerAITree, PlayerAITreeLimited, PlayerAITreeLimitMin
-from display import CursesDisplayer
+from twentysolver.display import CursesDisplayer
 
 class Player:
     def get_move(self, grid):
