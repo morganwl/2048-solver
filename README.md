@@ -20,3 +20,24 @@ larger tile.
 0.250
 2048.0 0.961
 
+## Issues
+
+### Game runner
+
+- Need a command line switch for agent selection
+- Curses implementation is kludgy
+- Status windows need labels
+- Needs improved error logging
+
+### Agent
+
+- Try implementing time limit as an interrupt instead of polling
+- Try loop-based iteration instead of recursive iteration
+
+### Documentation
+
+- Readme needs more detailed description of game, with references
+- Readme needs more detailed description of player interface, with
+  screenshots
+- Readme needs more detailed description of agent implementations, with
+  evaluation
