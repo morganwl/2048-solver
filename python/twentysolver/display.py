@@ -4,9 +4,17 @@ except ModuleNotFoundError:
     NoCurses = True
 else:
     NoCurses = False
+from math import log2
 
-GRIDWIDTH = 6*4
-GRIDHEIGHT = 3*4
+GRIDWIDTH = 7*4
+GRIDHEIGHT = 4*4
+
+COLORS = {
+        0: curses.COLOR_BLACK,
+        2: curses.COLOR_WHITE & curses.A_DIM,
+        4: curses.COLOR_WHITE,
+        8: curses.COLOR_WHITE & curses.A_BOLD,
+        }
 
 class CursesDisplayer:
     windows = [
@@ -43,11 +51,34 @@ class CursesDisplayer:
         self.infoscr.scrollok(True)
         self.gamescr.scrollok(True)
         self.sersscr.scrollok(True)
+        self.init_colors()
+
+    def init_colors(self):
+        """Initialize one color pair for each log value from 1 to 16."""
+        curses.start_color()
+        for p, color in enumerate([
+            (curses.COLOR_BLACK, curses.COLOR_WHITE),
+            (curses.COLOR_WHITE, curses.COLOR_BLACK),
+            (curses.COLOR_YELLOW, curses.COLOR_WHITE),
+            (curses.COLOR_MAGENTA, curses.COLOR_WHITE),
+            (curses.COLOR_BLUE, curses.COLOR_WHITE),
+            (curses.COLOR_CYAN, curses.COLOR_WHITE),
+            (curses.COLOR_GREEN, curses.COLOR_WHITE),
+            (curses.COLOR_GREEN, curses.COLOR_WHITE),
+                ], 1):
+            curses.init_pair(p, *color)
 
     def display(self, grid):
         for i in range(4):
             for j in range(4):
-                self.gridscr.addstr(3*i + 1, 6*j, f'{grid.get_cell_value(j,i): 5d}')
+                val = grid.get_cell_value(j,i)
+                l = int(log2(val)) if val > 0 else 0
+                color = curses.color_pair((l+3) // 2) | curses.A_REVERSE | curses.A_BOLD
+                if l % 2 == 1:
+                    color |= curses.A_DIM
+                self.gridscr.addstr(4*i, 7*j+1, f'{"":^6s}', color)
+                self.gridscr.addstr(4*i+1, 7*j+1, f'{val:^ 6d}', color)
+                self.gridscr.addstr(4*i+2, 7*j+1, f'{"":^6s}', color)
         self.gridscr.refresh()
 
     def print_player_move(self, move):
