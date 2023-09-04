@@ -20,6 +20,11 @@ class CursesDisplayer:
     windows = [
             [('headscr', 1, 0),],
             [
+                ('grhdscr', 1, GRIDWIDTH),
+                ('gmhdscr', 0, 0),
+                ('srhdscr', 0, 0),
+                ],
+            [
                 ('gridscr', GRIDHEIGHT, GRIDWIDTH),
                 ('gamescr', 0, 0),
                 ('sersscr', 0, 0),
@@ -31,6 +36,7 @@ class CursesDisplayer:
         self.stdscr = curses.initscr()
         self.stdscr.nodelay(True)
         curses.noecho()
+        curses.curs_set(False)
         y,x = 0, 0
         for row in self.windows:
             height = 0
@@ -52,6 +58,7 @@ class CursesDisplayer:
         self.gamescr.scrollok(True)
         self.sersscr.scrollok(True)
         self.init_colors()
+        self.init_headers()
 
     def init_colors(self):
         """Initialize one color pair for each log value from 1 to 16."""
@@ -97,16 +104,22 @@ class CursesDisplayer:
         self.infoscr.addstr(0,0, str(text))
         self.infoscr.refresh()
 
+    def init_headers(self):
+        self.gmhdscr.addstr(0,1, f'{"n":>4s} {"time":>6s} {"val":>8s}', curses.A_UNDERLINE)
+        self.srhdscr.addstr(0,1, f'{"moves":>5s} {"mtime":>6s} {"score":>5s}', curses.A_UNDERLINE)
+        self.gmhdscr.refresh()
+        self.srhdscr.refresh()
+
     def print_move_info(self, moves, mtime, val):
         y,x = self.gamescr.getyx()
         self.gamescr.scroll(-(y+1))
-        self.gamescr.addstr(0,0, f'{moves: 4d} {mtime/1e9: 3.4f} {val: 6.4f}')
+        self.gamescr.addstr(0,1, f'{moves:>4d} {mtime/1e9:>6.4f} {val:>8.2f}')
         self.gamescr.refresh()
 
     def print_game_info(self, no_moves, avg_mtime, score):
         y,x = self.sersscr.getyx()
         self.sersscr.scroll(-(y+1))
-        self.sersscr.addstr(0,0, f'{no_moves: 5d} {avg_mtime/1e9: 3.4f} {score: 5d}')
+        self.sersscr.addstr(0,1, f'{no_moves: 5d} {avg_mtime/1e9: 6.4f} {score: 5d}')
         self.sersscr.refresh()
 
     def wait(self):

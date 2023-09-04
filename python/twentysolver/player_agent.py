@@ -555,7 +555,7 @@ class PlayerAITreeLimitMin(PlayerAI):
         node.available.sort()
         node.value = INF
         for i, n in enumerate(node.available):
-            if i > 4:
+            if i > 5:
                 node.available = node.available[:i]
                 break
             v = self.get_expect(n, alpha, beta, depth)

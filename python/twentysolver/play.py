@@ -45,6 +45,7 @@ def play_game(player, opponent, displayer=None):
         displayer.display(grid)
 
     while True:
+        displayer.init_headers()
         input = displayer.getch()
         if input == ord('q'):
             return None

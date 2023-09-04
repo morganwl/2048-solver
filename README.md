@@ -5,6 +5,9 @@ The solver searches for a move that will lead to the best possible
 outcome, assuming that the game makes the move most inconvenient for the
 player AI.
 
+![2048 solver, with grid in top left, move log in top center, game log
+in top right, and distribution in bottom](images/solver_01.jpg)
+
 ## The game of 2048
 
 The game of 2048 presents the player with numeric tiles placed on a 4x4
