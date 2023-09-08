@@ -32,8 +32,10 @@ class CursesDisplayer:
             [('statscr', 2, 0)],
             [('infoscr', 0, 0)],
             ]
-    def __init__(self):
-        self.stdscr = curses.initscr()
+    def __init__(self, stdscr=None):
+        if stdscr is None:
+            stdscr = curses.initscr()
+        self.stdscr = stdscr
         self.stdscr.nodelay(True)
         curses.noecho()
         curses.curs_set(False)

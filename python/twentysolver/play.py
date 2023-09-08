@@ -1,3 +1,5 @@
+import argparse
+import curses
 from random import random, choice
 import statistics
 
@@ -73,18 +75,13 @@ def play_game(player, opponent, displayer=None):
             'score': grid.get_max_tile(),
             }
 
-def play_series(displayer, n=20):
+def play_series(displayer, n=20, player=None):
     games = []
     generator = np.random.default_rng()
     med, confidence = 0, 0
     while confidence < .95:
-        player = PlayerAITree()
-        # player = PlayerAITreeLimited()
-        player = PlayerAITreeLimitMin()
-        # player = PlayerAIDownRight()
-        # player = PlayerAICombination()
-        # player = PlayerAIAlphaBeta()
-        # player = PlayerAI()
+        if player is None:
+            player = PlayerAITreeLimitMin()
         stats = play_game(player, Computer(), displayer)
         if stats is None:
             break
@@ -128,9 +125,32 @@ def median_confidence(scores, generator=None, noise_level=8):
         dtype=np.uint8))
     return med, confidence
 
+def parseargs():
+    parser = argparse.ArgumentParser(
+            description='run a series of 2048 games for an AI agent')
+    parser.add_argument('--agent', '-a', help='name of agent')
+    return vars(parser.parse_args())
+
+def main(stdscr):
+    kwargs = parseargs()
+    displayer = CursesDisplayer(stdscr)
+    agent = kwargs['agent']
+    if agent == 'PlayerAI':
+        agent = PlayerAI()
+    elif agent == 'PlayerAIAlphaBeta':
+        agent = PlayerAIAlphaBeta()
+    elif agent == 'PlayerAICombination':
+        agent = PlayerAICombination()
+    elif agent == 'PlayerAITree':
+        agent = PlayerAITree()
+    elif agent == 'PlayerAITreeLimited':
+        agent = PlayerAITreeLimited()
+    elif agent == 'PlayerAITreeLimitMin':
+        agent = PlayerAITreeLimitMin()
+    else:
+        agent = None
+    play_series(displayer, player=agent)
+    displayer.wait()
 
 if __name__ == '__main__':
-    displayer = CursesDisplayer()
-    play_series(displayer)
-    displayer.wait()
-    del(displayer)
+    curses.wrapper(main)

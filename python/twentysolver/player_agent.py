@@ -338,10 +338,10 @@ class PlayerAITreeLimited(PlayerAI):
             (heuristic.evaluate_monotonic_change, .5),
             ]
 
-    def __init__(self, move_limit=1000, **kwargs):
+    def __init__(self, move_limit=200, **kwargs):
         self.root = None
         self.move_limit = move_limit
-        super().__init__(**kwargs)
+        super().__init__(depth_limit=3, **kwargs)
 
     @record
     def get_move(self, grid):
@@ -363,7 +363,7 @@ class PlayerAITreeLimited(PlayerAI):
         if self.root.available is None:
             self.root.available = [Node(m, g, estimate(g, self.sort_weights))
                     for m, g in self.root.grid.get_available_moves()]
-        while not self.over:
+        while not self.over and self.depth_limit < max_depth:
             self.root.available.sort(reverse=True)
             alpha, beta = -INF, INF
             alpha_2, beta_2 = -INF, INF

@@ -80,20 +80,23 @@ ways in which such interfaces were created.
 
 ### Game runner
 
-- Need a command line switch for agent selection
+- Needs usage instructions
+- Needs on-screen help re: kbd shortcuts
+- Tweak agent configuration from command line
+- Would be great to have interactive option selection, switch options
+  within one session
 - Curses implementation is kludgy
-- Status windows need labels
 - Needs improved error logging
 
 ### Agent
 
+- Agents need to be organized into separate files for clarity and
+  simplicity
 - Try implementing time limit as an interrupt instead of polling
 - Try loop-based iteration instead of recursive iteration
 
 ### Documentation
 
 - Readme needs more detailed description of game, with references
-- Readme needs more detailed description of player interface, with
-  screenshots
 - Readme needs more detailed description of agent implementations, with
   evaluation
