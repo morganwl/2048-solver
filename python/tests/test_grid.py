@@ -2,7 +2,7 @@
 
 import unittest
 
-from grid import Grid
+from twentysolver.grid import Grid
 
 DIRECTIONS = [RIGHT, DOWN, LEFT, UP] = range(4)
 

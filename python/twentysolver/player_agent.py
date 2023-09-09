@@ -39,7 +39,6 @@ def count(func):
     return wrapper
 
 class PlayerAI:
-    # evaluate = lambda s, x: heuristic.evaluate_max(x)
     evaluate_weights = [
             (heuristic.evaluate_max, 1),
             ]
