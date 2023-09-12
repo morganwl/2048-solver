@@ -76,14 +76,14 @@ def play_game(player, opponent, displayer=None):
             'score': grid.get_max_tile(),
             }
 
-def play_series(displayer, n=20, player=None):
+def play_series(displayer, n=20, agent=None):
     games = []
     generator = np.random.default_rng()
     med, confidence = 0, 0
+    if agent is None:
+        agent = CacheTree
     while confidence < .95:
-        if player is None:
-            player = CacheTree
-        player = player()
+        player = agent()
         stats = play_game(player, Computer(), displayer)
         if stats is None:
             break
@@ -143,7 +143,7 @@ def select_agent(agent):
 def main(stdscr, **kwargs):
     displayer = CursesDisplayer(stdscr)
     agent = kwargs['agent']
-    play_series(displayer, player=agent)
+    play_series(displayer)
     displayer.wait()
 
 if __name__ == '__main__':
