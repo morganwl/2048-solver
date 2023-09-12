@@ -32,10 +32,10 @@ class TestMaxFrame(unittest.TestCase):
 
     def test_alphabeta(self):
         frame = MaxFrame(None, alpha=1, beta=2)
-        frame.value = 1.5
+        frame.update((1.5, None))
         self.assertFalse(frame.alphabeta())
         self.assertEqual(frame.alpha, 1.5)
-        frame.value = 2.5
+        frame.update((2.5, None))
         self.assertTrue(frame.alphabeta())
 
 

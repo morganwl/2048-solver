@@ -8,7 +8,7 @@ import numpy as np
 from twentysolver.grid import Grid
 from twentysolver.player_agent import PlayerAI, PlayerAIAlphaBeta, PlayerAICombination, PlayerAIDownRight, \
         PlayerAITree, PlayerAITreeLimited
-from twentysolver.agent import PlayerAITreeLimitMin, NewLimitMin, CacheLimitMin
+from twentysolver.agent import PlayerAITreeLimitMin, NewLimitMin, CacheLimitMin, CacheTree
 from twentysolver.display import CursesDisplayer
 
 class Player:
@@ -152,6 +152,8 @@ def main(stdscr):
         agent = NewLimitMin()
     elif agent == 'CacheLimitMin':
         agent = CacheLimitMin()
+    elif agent == 'CacheTree':
+        agent = CacheTree()
     else:
         agent = None
     play_series(displayer, player=agent)
