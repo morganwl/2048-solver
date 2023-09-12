@@ -6,9 +6,9 @@ import statistics
 import numpy as np
 
 from twentysolver.grid import Grid
-from twentysolver.player_agent import PlayerAI, PlayerAIAlphaBeta, PlayerAICombination, PlayerAIDownRight, \
-        PlayerAITree, PlayerAITreeLimited
-from twentysolver.agent import PlayerAITreeLimitMin, NewLimitMin, CacheLimitMin, CacheTree
+import twentysolver.player_agent
+import twentysolver.agent
+from twentysolver.agent import CacheTree
 from twentysolver.display import CursesDisplayer
 
 class Player:
@@ -82,7 +82,8 @@ def play_series(displayer, n=20, player=None):
     med, confidence = 0, 0
     while confidence < .95:
         if player is None:
-            player = PlayerAITreeLimitMin()
+            player = CacheTree
+        player = player()
         stats = play_game(player, Computer(), displayer)
         if stats is None:
             break
@@ -129,35 +130,22 @@ def median_confidence(scores, generator=None, noise_level=8):
 def parseargs():
     parser = argparse.ArgumentParser(
             description='run a series of 2048 games for an AI agent')
-    parser.add_argument('--agent', '-a', help='name of agent')
+    parser.add_argument('--agent', '-a', help='name of agent', type=select_agent)
     return vars(parser.parse_args())
 
-def main(stdscr):
-    kwargs = parseargs()
+def select_agent(agent):
+    if agent in twentysolver.agent.__dict__:
+        return twentysolver.agent.__dict__[agent]
+    if agent in twentysolver.player_agent.__dict__:
+        return twentysolver.player_agent.__dict__[agent]
+    raise ValueError
+
+def main(stdscr, **kwargs):
     displayer = CursesDisplayer(stdscr)
     agent = kwargs['agent']
-    if agent == 'PlayerAI':
-        agent = PlayerAI()
-    elif agent == 'PlayerAIAlphaBeta':
-        agent = PlayerAIAlphaBeta()
-    elif agent == 'PlayerAICombination':
-        agent = PlayerAICombination()
-    elif agent == 'PlayerAITree':
-        agent = PlayerAITree()
-    elif agent == 'PlayerAITreeLimited':
-        agent = PlayerAITreeLimited()
-    elif agent == 'PlayerAITreeLimitMin':
-        agent = PlayerAITreeLimitMin()
-    elif agent == 'NewLimitMin':
-        agent = NewLimitMin()
-    elif agent == 'CacheLimitMin':
-        agent = CacheLimitMin()
-    elif agent == 'CacheTree':
-        agent = CacheTree()
-    else:
-        agent = None
     play_series(displayer, player=agent)
     displayer.wait()
 
 if __name__ == '__main__':
-    curses.wrapper(main)
+    kwargs = parseargs()
+    curses.wrapper(main, **kwargs)
