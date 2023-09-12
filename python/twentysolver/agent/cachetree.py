@@ -158,13 +158,18 @@ class ExpectFrame(Frame):
     def update(self, result):
         self.value += result.value * self.moves[self.i].prob
 
+    def alphabeta(self):
+        if self.i == 1 and self.value / self.moves[0].prob <= self.alpha:
+            return True
+        return False
+
     def result(self, value=None):
         self._grid.value = self.value
         return self
 
     def __getitem__(self, index):
         return MaxFrame(self.children[index],
-                alpha=self.alpha, beta=self.beta)
+                alpha=self.alpha*self.moves[index].prob, beta=self.beta/self.moves[index].prob)
 
 
 class GridNode:
@@ -210,7 +215,7 @@ class CacheTree(PlayerAI):
             (heuristic.evaluate_monotonic, .25),
             ]
 
-    def __init__(self, depth_limit=2, time_limit=2e8, **kwargs):
+    def __init__(self, depth_limit=2, time_limit=1.9e8, **kwargs):
         self.root = None
         self.time_limit = time_limit / 1e9
         frame_cache.clear()
@@ -221,14 +226,14 @@ class CacheTree(PlayerAI):
 
     def get_move(self, grid):
         self.over = False
-        stime = time.process_time_ns()
+        stime = time.time_ns()
         timer = threading.Timer(self.time_limit, self.set_over)
         timer.start()
         root = self.find_root(grid)
         depth_limit = 1
         node = None
         self.counts = {'get_max_calls': 0}
-        while True:
+        while True and not self.over:
             n = self.search(root, depth_limit)
             if self.over:
                 break
@@ -237,7 +242,7 @@ class CacheTree(PlayerAI):
         self.root = node
         timer.cancel()
         self.stats = {
-                'last_move_time': time.process_time_ns() - stime,
+                'last_move_time': time.time_ns() - stime,
                 'last_move_value': depth_limit -1,
                 # 'last_move_value': node.value if node else 0,
                 }
