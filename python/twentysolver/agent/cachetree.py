@@ -22,13 +22,6 @@ class Frame:
         self.i = i
         self.best_node = None
 
-    def expand(self):
-        """Fills the queue with possible successor frames, and sets
-        index to first element."""
-        if self.children is None:
-            return self._expand()
-        self.i = -1
-
     def alphabeta(self):
         """Update bounds ane prune branch if move is outside of
         bounds."""
@@ -85,9 +78,10 @@ class MaxFrame(Frame):
             (heuristic.evaluate_empty, 2),
             (heuristic.evaluate_monotonic, .25),
             ]
-    def _expand(self):
-        self.children = [GridNode(g, m, estimate(g, self.sort_weights))
-            for m, g in self.grid.get_available_moves()]
+    def expand(self):
+        if self.children is None:
+            self.children = [GridNode(g, m, estimate(g, self.sort_weights))
+                for m, g in self.grid.get_available_moves()]
         self.children.sort(reverse=True)
         self.i = -1
 
@@ -122,11 +116,12 @@ class MinFrame(Frame):
             (heuristic.evaluate_monotonic_change, .25),
             ]
 
-    def _expand(self):
-        e = 1.1 * estimate(self.grid, self.sort_weights)
-        self.children = [GridNode(self.grid,
-            c, e + estimate_min(self.grid, c, self.min_sort_weights))
-            for c in self.grid.get_available_cells()]
+    def expand(self):
+        if self.children is None:
+            e = 1.1 * estimate(self.grid, self.sort_weights)
+            self.children = [GridNode(self.grid,
+                c, e + estimate_min(self.grid, c, self.min_sort_weights))
+                for c in self.grid.get_available_cells()]
         self.children.sort()
         self.i = -1
 
@@ -154,9 +149,10 @@ class ExpectFrame(Frame):
         self.value = 0
         super().__init__(*args, **kwargs)
 
-    def _expand(self):
-        self.children = [GridNode(self.grid.insert_tile(self.move, t), t)
-            for t,_ in self.moves]
+    def expand(self):
+        if self.children is None:
+            self.children = [GridNode(self.grid.insert_tile(self.move, t), t)
+                for t,_ in self.moves]
         self.i = -1
 
     def update(self, result):
@@ -242,7 +238,8 @@ class CacheTree(PlayerAI):
         timer.cancel()
         self.stats = {
                 'last_move_time': time.process_time_ns() - stime,
-                'last_move_value': node.value if node else 0,
+                'last_move_value': depth_limit -1,
+                # 'last_move_value': node.value if node else 0,
                 }
         if node is None:
             return grid.get_available_moves()[0][0]
