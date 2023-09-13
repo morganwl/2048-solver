@@ -1,7 +1,9 @@
 import argparse
 import curses
+import datetime
 from random import random, choice
 import statistics
+import subprocess
 
 import numpy as np
 
@@ -35,7 +37,7 @@ def random_tile():
     """Returns a random tile value of 2 or 4."""
     return 2 if random() < .9 else 4
 
-def play_game(player, opponent, displayer=None):
+def play_game(player, opponent, displayer=None, screenshot=False):
     grid = Grid()
 
     for _ in range(2):
@@ -46,8 +48,12 @@ def play_game(player, opponent, displayer=None):
     moves = []
     if displayer:
         displayer.display(grid)
+    if screenshot:
+        screenshot = take_screenshot(player)
 
     while True:
+        if screenshot:
+            next(screenshot)
         displayer.init_headers()
         input = displayer.getch()
         if input == ord('q'):
@@ -76,7 +82,7 @@ def play_game(player, opponent, displayer=None):
             'score': grid.get_max_tile(),
             }
 
-def play_series(displayer, n=20, agent=None):
+def play_series(displayer, n=20, agent=None, screenshot=False):
     games = []
     generator = np.random.default_rng()
     med, confidence = 0, 0
@@ -84,7 +90,7 @@ def play_series(displayer, n=20, agent=None):
         agent = CacheTree
     while confidence < .95:
         player = agent()
-        stats = play_game(player, Computer(), displayer)
+        stats = play_game(player, Computer(), displayer, screenshot=screenshot)
         if stats is None:
             break
         games.append(stats)
@@ -131,6 +137,7 @@ def parseargs():
     parser = argparse.ArgumentParser(
             description='run a series of 2048 games for an AI agent')
     parser.add_argument('--agent', '-a', help='name of agent', type=select_agent)
+    parser.add_argument('--screenshot', '-s', action='store_true')
     return vars(parser.parse_args())
 
 def select_agent(agent):
@@ -140,11 +147,25 @@ def select_agent(agent):
         return twentysolver.player_agent.__dict__[agent]
     raise ValueError
 
-def main(stdscr, **kwargs):
+def main(stdscr, screenshot=False, **kwargs):
     displayer = CursesDisplayer(stdscr)
     agent = kwargs['agent']
-    play_series(displayer)
+    play_series(displayer, agent=agent, screenshot=screenshot)
     displayer.wait()
+
+def get_win_id():
+    xdotool = subprocess.run(['xdotool', 'getactivewindow'], capture_output=True)
+    return xdotool.stdout.decode('utf8').strip()
+
+def take_screenshot(agent):
+    today = datetime.datetime.today()
+    game_name = f'{type(agent).__name__}_{today.strftime("%b%d-%I%M")}'
+    move_no = 0
+    winid = get_win_id()
+    while True:
+        subprocess.run(['import', '-window', winid, f'screenshots/{game_name}_{move_no:05d}.gif'])
+        move_no += 1
+        yield None
 
 if __name__ == '__main__':
     kwargs = parseargs()

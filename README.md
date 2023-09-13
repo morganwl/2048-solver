@@ -1,19 +1,79 @@
 # Autonomous 2048 Solver
 
-This is a simple 2048 solver built using adversarial expectimax search.
+This is a simple 2048 solver built using _adversarial expectimax search_.
 The solver searches for a move that will lead to the best possible
 outcome, assuming that the game makes the move most inconvenient for the
-player AI.
+player. A playthrough is shown using a curses interface, with
+performance statistics calculated and refined by multiple playthroughs.
+The entire program has been written in Python.
+
+This project demonstrates optimizing depth-first-search algorithms,
+developing evaluation heuristics, analysis of confidence intervals, and
+general python programming techniques.
 
 ![2048 solver, with grid in top left, move log in top center, game log
 in top right, and distribution in bottom](images/solver_01.jpg)
 
+![2048 solver, getting from a maximum tile of 1024 to
+2048](images/solver_ani_01.gif)
+
 ## The game of 2048
 
 The game of 2048 presents the player with numeric tiles placed on a 4x4
-board.  By sliding the tiles in one of four directions (right, left, up
+board. By sliding the tiles in one of four directions (right, left, up
 and down), the player can combine tiles of the same value into a new,
-larger tile.
+larger tile. After each player move, a single tile is added in one of
+the empty spaces. The placement of the new tile is uniformly random, but
+the value is 2 with a 90% probability and 4 with 10% probability.
+
+The original game can be (played
+online)[https://https://play2048.co/], and the source code is on Github
+as (gabrielecirulli/2048)[https://github.com/gabrielecirulli/2048].
+
+The game is _won_ by achieving a tile of at least 2048, though play
+continues afterwards and larger tiles are possible.
+
+## 2048 as an Artificial Intelligence Problem
+
+Because the actions, outcomes, and goals are well-defined, 2048 presents
+an interesting _toy_ problem for AI agents. An autonomous agent can
+play by considering the outcome of each possible move, and selecting the
+move with the best outcome. However, because a single game can span over
+a thousand turns, with each turn containing many possible outcomes, the
+state space is too large to be searched quickly. A successful agent must
+utilize a mixture of pruning techniques and heuristic evaluation
+functions to estimate the best outcome after a short sequence of moves.
+
+### Adversarial Search
+
+The central algorithm for this project is _adversarial expectimax
+search_. The search is split into three phases, each of which determines
+the value of a particular state by different rules.
+
+- **Player phase (max)**: The player will choose the move with the
+  highest expected value. As such, the value of a Max state is directly
+  proportional to the highest value of possible moves from that state.
+- **Opponent phase (min)**: The opponent is _assumed_ to choose the
+  optimal move, which is the move with the _lowest_ expected value.
+  Therefore, the value of a Min state is directly proportional to the
+  lowest value of possible moves from that state.
+- **Environmental phase (expect)**: In a non-deterministic environment,
+  an action might have more than one possible outcome. The expected
+  value of a particular move is the value of each state that might
+  result, multiplied by the probability of that state. In our search
+  algorithm, we treat the _value_ of the newly inserted tile to be
+  non-deterministic.
+
+Ideally, a search algorithm would be able to follow each move to the end
+of the game, assessing the value of any given move based on the values
+of _leaf states_. However, searching a tree that might be thousands of
+levels deep, with a branching factor of anywhere from 2 to 120 outcomes
+per turn, is intractable.
+
+We compromise with a depth-limited search, which evaluates all states of
+a certain depth and propagates that value back up the tree. Choosing the
+appropriate depth, and the appropriate evaluation function, is part of
+the challenge.
 
 ## Gameplay Interface
 
