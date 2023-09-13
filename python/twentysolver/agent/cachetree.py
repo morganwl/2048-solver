@@ -80,6 +80,7 @@ class Frame:
 
 
 class MaxFrame(Frame):
+    """Find the subsequent move with the largest value."""
     sort_weights = [
             (heuristic.evaluate_combination, .75),
             (heuristic.evaluate_empty, 2),
@@ -114,6 +115,7 @@ class MaxFrame(Frame):
 
 
 class MinFrame(Frame):
+    """Find the subsequent move with the smallest value."""
     sort_weights = [
             (heuristic.evaluate_combination, .75),
             (heuristic.evaluate_empty, 2),
@@ -150,6 +152,7 @@ class MinFrame(Frame):
 
 MoveProb = namedtuple('MoveProb', ('move', 'prob'))
 class ExpectFrame(Frame):
+    """Calculate expected value of move based on probability of outcomes."""
     __slots__ = ['value']
     moves = [MoveProb(2, .9), MoveProb(4, .1)]
     def __init__(self, *args, **kwargs):
@@ -180,6 +183,8 @@ class ExpectFrame(Frame):
 
 
 class GridNode:
+    """Store a move and corresponding grid, with links to the possible
+    moves from that grid."""
     __slots__ = ['grid', 'move', 'value', 'children']
 
     def __init__(self, grid, move=None, value=None):

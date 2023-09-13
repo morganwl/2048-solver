@@ -23,3 +23,8 @@ class TestMaxFrame(unittest.TestCase):
         self.assertEqual(frame.best_node, child2._grid)
         frame.update(child3)
         self.assertEqual(frame.best_node, child2._grid)
+
+
+class TestCacheTreeAcceptance(unittest.TestCase):
+    """CacheTree should search for its configured time limit, and return
+    the optimum move (within searched space)."""
