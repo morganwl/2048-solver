@@ -92,8 +92,10 @@ ways in which such interfaces were created.
 
 - Agents need to be organized into separate files for clarity and
   simplicity
-- Try implementing time limit as an interrupt instead of polling
-- Try loop-based iteration instead of recursive iteration
+
+### Testing
+
+- Very few tests have been written
 
 ### Documentation
 
