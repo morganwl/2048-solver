@@ -14,17 +14,22 @@ from twentysolver.agent import CacheTree
 from twentysolver.display import CursesDisplayer
 
 class Player:
-    def get_move(self, grid):
+    """Human-controlled agent."""
+    def get_move(self, _):
+        """Solicit move from standard input."""
         move = input()
         while move not in ['0','1','2','3']:
             print('Move must be a value between 0 and 3.')
         return int(move)
 
 class Computer:
+    """Computer-controlled opponent."""
     def get_move(self, grid):
+        """Selects from available tiles at random."""
         return choice(grid.get_available_cells())
 
 class Displayer:
+    """Simple terminal-based displayer."""
     def display(self, grid):
         for i in range(4):
             print()
@@ -38,6 +43,7 @@ def random_tile():
     return 2 if random() < .9 else 4
 
 def play_game(player, opponent, displayer=None, screenshot=False):
+    """Play a single game and return a dictionary of statistics."""
     grid = Grid()
 
     for _ in range(2):
@@ -83,6 +89,9 @@ def play_game(player, opponent, displayer=None, screenshot=False):
             }
 
 def play_series(displayer, n=20, agent=None, screenshot=False):
+    """Play a series of games, calculating the confidence interval for
+    median and percentiles, stopping after a sufficiently high
+    confidence is reached."""
     games = []
     generator = np.random.default_rng()
     med, confidence = 0, 0
@@ -104,14 +113,20 @@ def play_series(displayer, n=20, agent=None, screenshot=False):
                     for target, per, (low, high) in distribution))
 
 def interval(trials, value, confidence):
+    """Returns the confidence interval for the probability that a game
+    will have a score greater than or equal to value."""
     distributions = (np.mean(trial >= value) for trial in trials)
     quantiles = np.quantile(
             np.sort(np.fromiter(distributions, np.float64)),
             [.5 - confidence/2, .5 + confidence/2])
     return quantiles
-    return quantiles[1] - quantiles[0]
 
 def dist_ci(scores, generator=None, noise_level=5, confidence=.95):
+    """Returns a list of (target, distribution, confidence) pairs, where
+    distribution is the estimated probability that the agent will achieve
+    greater than or equal to target, and confidence is the confidence
+    interval of this estimated probability. Targets are from [16, 32,
+    64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384]."""
     if generator is None:
         generator = np.default_rng()
     targets = [2** i for i in range(9,13)]
@@ -123,6 +138,8 @@ def dist_ci(scores, generator=None, noise_level=5, confidence=.95):
     return list(zip(targets, distribution, confidence))
 
 def median_confidence(scores, generator=None, noise_level=8):
+    """Returns the percent confidence that median is the exact expected
+    median score for a given agent."""
     if generator is None:
         generator = np.default_rng()
     noise = generator.choice([2**i for i in range(4,14)], 2*noise_level)
@@ -134,6 +151,7 @@ def median_confidence(scores, generator=None, noise_level=8):
     return med, confidence
 
 def parseargs():
+    """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
             description='run a series of 2048 games for an AI agent')
     parser.add_argument('--agent', '-a', help='name of agent', type=select_agent)
@@ -141,6 +159,7 @@ def parseargs():
     return vars(parser.parse_args())
 
 def select_agent(agent):
+    """Select agent based on class-name."""
     if agent in twentysolver.agent.__dict__:
         return twentysolver.agent.__dict__[agent]
     if agent in twentysolver.player_agent.__dict__:
@@ -148,16 +167,20 @@ def select_agent(agent):
     raise ValueError
 
 def main(stdscr, screenshot=False, **kwargs):
+    """Main program loop."""
     displayer = CursesDisplayer(stdscr)
     agent = kwargs['agent']
     play_series(displayer, agent=agent, screenshot=screenshot)
     displayer.wait()
 
 def get_win_id():
+    """Gets the X-windows id of the current window."""
     xdotool = subprocess.run(['xdotool', 'getactivewindow'], capture_output=True)
     return xdotool.stdout.decode('utf8').strip()
 
 def take_screenshot(agent):
+    """Generator taking a screenshot of the current window. Requires
+    imagemagick to be installed."""
     today = datetime.datetime.today()
     game_name = f'{type(agent).__name__}_{today.strftime("%b%d-%I%M")}'
     move_no = 0
@@ -168,5 +191,5 @@ def take_screenshot(agent):
         yield None
 
 if __name__ == '__main__':
-    kwargs = parseargs()
-    curses.wrapper(main, **kwargs)
+    parsed_args = parseargs()
+    curses.wrapper(main, **parsed_args)
