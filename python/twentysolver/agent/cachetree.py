@@ -1,21 +1,21 @@
+"""An iterative deepening agent that caches results in a search tree."""
+
 from collections import namedtuple
-from enum import Enum, auto
-import itertools
 import threading
 import time
 
-from . import PlayerAI, record, count, INF, Node
-
-import twentysolver.heuristic as heuristic
+from twentysolver import heuristic
 from twentysolver.heuristic import estimate, estimate_min
 
+from . import PlayerAI, INF
 
 frame_cache = {}
 
 
 class Frame:
+    """Stack frame for storing search state for any given move (player or opponent)."""
     __slots__ = ['_grid', 'alpha', 'beta', 'i', 'best_node']
-    def __init__(self, grid, move=None, alpha=-INF, beta=INF, i=None):
+    def __init__(self, grid, alpha=-INF, beta=INF, i=None):
         self._grid = grid
         self.alpha = alpha
         self.beta = beta
@@ -23,11 +23,15 @@ class Frame:
         self.best_node = None
 
     def alphabeta(self):
-        """Update bounds ane prune branch if move is outside of
+        """Update bounds and prune branch if move is outside of
         bounds."""
         return False
 
     def result(self, value=None):
+        """Store best seen child value as the value for this move.
+        Optionally supply a different value instead, used when cutting
+        off search at the depth limit. Otherwise, if no child node has
+        been recorded, assign the minimum possible score."""
         if value is not None:
             self._grid.value = value
         elif self.best_node is not None:
@@ -38,26 +42,29 @@ class Frame:
 
     @property
     def grid(self):
+        """Returns the corresponding grid for this stack frame."""
         return self._grid.grid
 
     @property
     def children(self):
+        """Returns the list of possible moves from this stack frame."""
         return self._grid.children
 
     @children.setter
     def children(self, value):
+        """Set the list of possible moves from this stack frame."""
         self._grid.children = value
 
     @property
     def value(self):
+        """Returns the current estimated value of the move associated
+        with this stack frame.."""
         return self._grid.value
 
     @property
     def move(self):
+        """Returns the move associated with this stack frame."""
         return self._grid.move
-
-    def __getitem__(self, i):
-        return self.children[i]
 
     def __lt__(self, other):
         try:
@@ -73,6 +80,7 @@ class Frame:
 
 
 class MaxFrame(Frame):
+    """Find the subsequent move with the largest value."""
     sort_weights = [
             (heuristic.evaluate_combination, .75),
             (heuristic.evaluate_empty, 2),
@@ -107,6 +115,7 @@ class MaxFrame(Frame):
 
 
 class MinFrame(Frame):
+    """Find the subsequent move with the smallest value."""
     sort_weights = [
             (heuristic.evaluate_combination, .75),
             (heuristic.evaluate_empty, 2),
@@ -143,6 +152,7 @@ class MinFrame(Frame):
 
 MoveProb = namedtuple('MoveProb', ('move', 'prob'))
 class ExpectFrame(Frame):
+    """Calculate expected value of move based on probability of outcomes."""
     __slots__ = ['value']
     moves = [MoveProb(2, .9), MoveProb(4, .1)]
     def __init__(self, *args, **kwargs):
@@ -173,6 +183,8 @@ class ExpectFrame(Frame):
 
 
 class GridNode:
+    """Store a move and corresponding grid, with links to the possible
+    moves from that grid."""
     __slots__ = ['grid', 'move', 'value', 'children']
 
     def __init__(self, grid, move=None, value=None):
@@ -289,4 +301,6 @@ class CacheTree(PlayerAI):
             stack.append(frame[frame.i])
         if not self.over:
             return result.best_node
+        if stack:
+            return stack[0].best_node
         return None
