@@ -153,9 +153,14 @@ def median_confidence(scores, generator=None, noise_level=8):
 def parseargs():
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
-            description='run a series of 2048 games for an AI agent')
+            description=('Play a series of 2048 games using an AI player '
+            'in a curses environment, calculating the expected '
+            'performance over the duration of the series.'))
     parser.add_argument('--agent', '-a', help='name of agent', type=select_agent)
-    parser.add_argument('--screenshot', '-s', action='store_true')
+    parser.add_argument('--screenshot', '-s', action='store_true',
+            help='[DEVELOPER OPTION] store a screenshot of the console after every move')
+    parser.add_argument('--list-agents', action='store_true',
+            help='list available agents and exit')
     return vars(parser.parse_args())
 
 def select_agent(agent):
@@ -165,6 +170,15 @@ def select_agent(agent):
     if agent in twentysolver.player_agent.__dict__:
         return twentysolver.player_agent.__dict__[agent]
     raise ValueError
+
+def list_agents():
+    """Print a list of known agent classes."""
+    print('Available agents:', ', '.join(name for name, cls in twentysolver.agent.__dict__.items()
+        if callable(getattr(cls, 'get_move', None))))
+    # print(', '.join(obj.__name__
+    #     for obj in twentysolver.agent.__dict__
+    #     if callable(getattr(obj, 'get_move', None))))
+
 
 def main(stdscr, screenshot=False, **kwargs):
     """Main program loop."""
@@ -192,4 +206,7 @@ def take_screenshot(agent):
 
 if __name__ == '__main__':
     parsed_args = parseargs()
-    curses.wrapper(main, **parsed_args)
+    if 'list_agents' in parsed_args:
+        list_agents()
+    else:
+        curses.wrapper(main, **parsed_args)
