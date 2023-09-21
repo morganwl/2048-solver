@@ -57,7 +57,7 @@ The following instructions are for Mac and Linux systems.
     play.py
 ```
 
-    For more command line options, run::
+For more command line options, run:
 
 ```
     play.py --help
