@@ -5,21 +5,6 @@
 A 2048 artificial intelligence solver built using _adversarial
 expectimax search_, with a curses interface.
 
-<!-- This is a simple 2048 solver built using _adversarial expectimax search_. -->
-<!-- The solver searches for a move that will lead to the best possible -->
-<!-- outcome, assuming that the game makes the move most inconvenient for the -->
-<!-- player. A playthrough is shown using a curses interface, with -->
-<!-- performance statistics calculated and refined by multiple playthroughs. -->
-<!-- The entire program has been written in Python. -->
-
-<!-- This project demonstrates optimizing depth-first-search algorithms, -->
-<!-- developing evaluation heuristics, analysis of confidence intervals, and -->
-<!-- general python programming techniques. -->
-
-<!-- ![2048 solver, with grid in top left, move log in top center, game log -->
-<!-- in top right, and distribution in bottom](images/solver_01.jpg) -->
-![2048 solver, getting from a maximum tile of 1024 to 2048](images/solver_ani_01.gif)
-
 ## Features
 
 - Allows user to select one of several autonomous agents to play a
@@ -30,6 +15,8 @@ expectimax search_, with a curses interface.
 - Calculates confidence intervals based on variance of observed trials.
 - Default agent successfully reaches 2048 in over 50% of trials with a
   time limit of .2 seconds per move.
+
+![2048 solver, getting from a maximum tile of 1024 to 2048](images/solver_ani_01.gif)
 
 ## Requirements
 
