@@ -33,34 +33,34 @@ The following instructions are for Mac and Linux systems.
 1. Open a terminal and select a location to download the git repo:
 
 ```
-    cd [preferred code folder]
-    git clone https://github.com/morganwl/2048-solver
-    cd 2048-solver
+cd [preferred code folder]
+git clone https://github.com/morganwl/2048-solver
+cd 2048-solver
 ```
 
 2. Creating a _virtual environment_ is highly recommended::
 
 ```
-    python3 -m venv venv
-    source venv/bin/activate.sh
+python3 -m venv venv
+source venv/bin/activate.sh
 ```
 
 3. Install the package, which will install the required dependencies::
 
 ```
-    pip python
+pip python
 ```
 
 4. Watch your computer play 2048::
 
 ```
-    play.py
+play.py
 ```
 
 For more command line options, run:
 
 ```
-    play.py --help
+play.py --help
 ```
 
 ## The game of 2048
