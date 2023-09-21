@@ -14,9 +14,9 @@ developing evaluation heuristics, analysis of confidence intervals, and
 general python programming techniques.
 
 ![2048 solver, with grid in top left, move log in top center, game log
-in top right, and distribution in bottom](images/solver_01.jpg =480x)
+in top right, and distribution in bottom](images/solver_01.jpg)
 ![2048 solver, getting from a maximum tile of 1024 to
-2048](images/solver_ani_01.gif =480x)
+2048](images/solver_ani_01.gif)
 
 ## The game of 2048
 
