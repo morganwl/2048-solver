@@ -8,20 +8,20 @@ from twentysolver import searchtest
 from twentysolver.searchtest import MoveType
 
 
-class GridTester:
+class GridTester(unittest.TestCase):
     """Parent class containing convenience functions for testing grid validity."""
     early_grid = [0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 4, 4, 0, 0]
     def assert_valid(self, move_type, starting_grid, possible_moves):
         """Asserts that all (move,grid) pairs are valid, meaning that
         the move is possible from starting_grid, and the resulting grid
         is the correct outcome."""
-        match move_type:
-            case MoveType.PLAYER:
-                return self.assert_valid_player(starting_grid, possible_moves)
-            case MoveType.OPPONENT:
-                return self.assert_valid_opponent(starting_grid, possible_moves)
-            case MoveType.CHANCE:
-                return self.assert_valid_chance(starting_grid, possible_moves)
+        if move_type == MoveType.PLAYER:
+            return self.assert_valid_player(starting_grid, possible_moves)
+        if move_type == MoveType.OPPONENT:
+            return self.assert_valid_opponent(starting_grid, possible_moves)
+        if move_type == MoveType.CHANCE:
+            return self.assert_valid_chance(starting_grid, possible_moves)
+        return None
 
     def assert_valid_player(self, starting_grid, possible_moves):
         """Asserts that all player (move,grid) pairs are valid."""
@@ -50,13 +50,13 @@ class GridTester:
     def assert_complete(self, move_type, starting_grid, possible_moves):
         """Asserts that a list of (move,grid) pairs contains all
         possible moves from a given grid."""
-        match move_type:
-            case MoveType.PLAYER:
-                return self.assert_complete_player(starting_grid, possible_moves)
-            case MoveType.OPPONENT:
-                return self.assert_complete_opponent(starting_grid, possible_moves)
-            case MoveType.CHANCE:
-                return self.assert_complete_chance(starting_grid, possible_moves)
+        if move_type == MoveType.PLAYER:
+            return self.assert_complete_player(starting_grid, possible_moves)
+        if move_type == MoveType.OPPONENT:
+            return self.assert_complete_opponent(starting_grid, possible_moves)
+        if move_type == MoveType.CHANCE:
+            return self.assert_complete_chance(starting_grid, possible_moves)
+        return None
 
     def assert_complete_player(self, starting_grid, possible_moves):
         """Asserts that all expected player (move,grid) pairs are present."""
@@ -83,7 +83,7 @@ class GridTester:
                 self.assertTrue(value in possible_moves)
 
 
-class TestSearchTestSearch(unittest.TestCase, GridTester):
+class TestSearchTestSearch(GridTester):
     """Test components of SearchTree."""
     def setUp(self):
         self.early_grid = Grid.from_list(self.early_grid)
@@ -147,7 +147,7 @@ class TestSearchTestSearch(unittest.TestCase, GridTester):
     # tuples to single Node objects.
     # 4. The first node in the file is the root node.
 
-class TestSearchTestAcceptance(unittest.TestCase, GridTester):
+class TestSearchTestAcceptance(GridTester):
     """SearchTest should generate a complete search tree to a specified
     depth and save the output as json."""
     def setUp(self):
