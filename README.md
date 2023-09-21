@@ -1,3 +1,5 @@
+![python package](https://github.com/morganwl/2048-solver/actions/workflows/python-package.yml/badge.svg)
+
 # Autonomous 2048 Solver
 
 This is a simple 2048 solver built using _adversarial expectimax search_.
