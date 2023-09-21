@@ -2,21 +2,69 @@
 
 # Autonomous 2048 Solver
 
-This is a simple 2048 solver built using _adversarial expectimax search_.
-The solver searches for a move that will lead to the best possible
-outcome, assuming that the game makes the move most inconvenient for the
-player. A playthrough is shown using a curses interface, with
-performance statistics calculated and refined by multiple playthroughs.
-The entire program has been written in Python.
+A 2048 artificial intelligence solver built using _adversarial
+expectimax search_, with a curses interface.
 
-This project demonstrates optimizing depth-first-search algorithms,
-developing evaluation heuristics, analysis of confidence intervals, and
-general python programming techniques.
+<!-- This is a simple 2048 solver built using _adversarial expectimax search_. -->
+<!-- The solver searches for a move that will lead to the best possible -->
+<!-- outcome, assuming that the game makes the move most inconvenient for the -->
+<!-- player. A playthrough is shown using a curses interface, with -->
+<!-- performance statistics calculated and refined by multiple playthroughs. -->
+<!-- The entire program has been written in Python. -->
 
-![2048 solver, with grid in top left, move log in top center, game log
-in top right, and distribution in bottom](images/solver_01.jpg)
-![2048 solver, getting from a maximum tile of 1024 to
-2048](images/solver_ani_01.gif)
+<!-- This project demonstrates optimizing depth-first-search algorithms, -->
+<!-- developing evaluation heuristics, analysis of confidence intervals, and -->
+<!-- general python programming techniques. -->
+
+<!-- ![2048 solver, with grid in top left, move log in top center, game log -->
+<!-- in top right, and distribution in bottom](images/solver_01.jpg) -->
+![2048 solver, getting from a maximum tile of 1024 to 2048](images/solver_ani_01.gif)
+
+## Features
+
+- Allows user to select one of several autonomous agents to play a
+  series of games of 2048.
+- Displays a color-coded game-board and real-time evaluation data in a
+  windowed console-based interface.
+- Updates long-run performance after every game.
+- Calculates confidence intervals based on variance of observed trials.
+- Default agent successfully reaches 2048 in over 50% of trials with a
+  time limit of .2 seconds per move.
+
+## Requirements
+
+- Python3 (tested on 3.9 and above)
+- curses (included with Mac and Linux, but requires additional install
+  on Windows)
+- numpy
+- Runs in a terminal, preferably with color support
+
+## Installation and Usage
+
+The following instructions are for Mac and Linux systems.
+
+1. Open a terminal and select a location to download the git repo::
+
+    cd [preferred code folder]
+    git clone https://github.com/morganwl/2048-solver
+    cd 2048-solver
+
+2. Creating a _virtual environment_ is highly recommended::
+
+    python3 -m venv venv
+    source venv/bin/activate.sh
+
+3. Install the package, which will install the required dependencies::
+
+    pip python
+
+4. Watch your computer play 2048::
+
+    play.py
+
+    For more command line options, run::
+
+    play.py --help
 
 ## The game of 2048
 
